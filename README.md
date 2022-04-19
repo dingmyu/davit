@@ -1,8 +1,10 @@
 # DaViT: Dual Attention Vision Transformer
 
-This repo contains the official detection and segmentation implementation of paper "[DaViT: Dual Attention Vision Transformer](https://arxiv.org/pdf/2204.03645.pdf)", by Mingyu Ding, Bin Xiao, Noel Codella, Ping Luo, Jingdong Wang, and Lu Yuan.
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/davit-dual-attention-vision-transformers/image-classification-on-imagenet)](https://paperswithcode.com/sota/image-classification-on-imagenet?p=davit-dual-attention-vision-transformers)
 
-### The official implementation for image classification will be released in [https://github.com/microsoft/DaViT](https://github.com/microsoft/DaViT).
+This repo contains the official detection and segmentation implementation of paper "[DaViT: Dual Attention Vision Transformer](https://arxiv.org/pdf/2204.03645.pdf)", by Mingyu Ding, Bin Xiao, Noel Codella, Ping Luo, Jingdong Wang, and Lu Yuan. See [Introduction.md](./Introduction.md) for an introduction.
+
+**The official implementation for image classification will be released in [https://github.com/microsoft/DaViT](https://github.com/microsoft/DaViT).**
 
 
 ## Getting Started
@@ -98,7 +100,7 @@ pip install thop pyyaml fvcore pillow==8.3.2
 
 ## Citation
 
-If you find this repo useful to your project, please consider citing it with following bib:
+If you find this repo useful to your project, please consider citing it with the following bib:
 
     @article{ding2022davit,
         title={DaViT: Dual Attention Vision Transformer}, 
