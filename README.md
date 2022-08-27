@@ -1,4 +1,4 @@
-# DaViT: Dual Attention Vision Transformer
+# DaViT: Dual Attention Vision Transformer (ECCV 2022)
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/davit-dual-attention-vision-transformers/image-classification-on-imagenet)](https://paperswithcode.com/sota/image-classification-on-imagenet?p=davit-dual-attention-vision-transformers)
 
@@ -102,10 +102,10 @@ pip install thop pyyaml fvcore pillow==8.3.2
 
 If you find this repo useful to your project, please consider citing it with the following bib:
 
-    @article{ding2022davit,
+    @inproceedings{ding2022davit,
         title={DaViT: Dual Attention Vision Transformer}, 
         author={Ding, Mingyu and Xiao, Bin and Codella, Noel and Luo, Ping and Wang, Jingdong and Yuan, Lu},
-        journal={arXiv preprint arXiv:2204.03645},
+        booktitle={ECCV},
         year={2022},
     }
 
