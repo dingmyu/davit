@@ -1,11 +1,27 @@
-# DaViT: Dual Attention Vision Transformer
+# DaViT: Dual Attention Vision Transformer (ECCV 2022)
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/davit-dual-attention-vision-transformers/image-classification-on-imagenet)](https://paperswithcode.com/sota/image-classification-on-imagenet?p=davit-dual-attention-vision-transformers)
 
-This repo contains the official detection and segmentation implementation of paper "[DaViT: Dual Attention Vision Transformer](https://arxiv.org/pdf/2204.03645.pdf)", by Mingyu Ding, Bin Xiao, Noel Codella, Ping Luo, Jingdong Wang, and Lu Yuan. See [Introduction.md](./Introduction.md) for an introduction.
+This repo contains the official detection and segmentation implementation of paper "[DaViT: Dual Attention Vision Transformer (ECCV 2022)](https://arxiv.org/pdf/2204.03645.pdf)", by Mingyu Ding, Bin Xiao, Noel Codella, Ping Luo, Jingdong Wang, and Lu Yuan. See [Introduction.md](./Introduction.md) for an introduction.
 
 **The official implementation for image classification will be released in [https://github.com/microsoft/DaViT](https://github.com/microsoft/DaViT).**
 
+## Introduction
+
+![teaser](figures/teaser.png)
+
+In this work, we introduce Dual Attention Vision Transformers (DaViT), a simple yet effective vision transformer architecture that is able to capture global context while maintaining computational efficiency.
+We propose approaching the problem from an orthogonal angle: exploiting self-attention mechanisms with both "spatial tokens" and "channel tokens".
+(i) Since each channel token contains an abstract representation of the entire image, the channel attention naturally captures global interactions and representations by taking all spatial positions into account when computing attention scores between channels.
+(ii) The spatial attention refines the local representations by performing fine-grained interactions across spatial locations, which in turn helps the global information modeling in channel attention.
+
+![architecture](figures/architecture.png)
+
+Experiments show our DaViT achieves state-of-the-art performance on four different tasks with efficient computations.
+Without extra data, DaViT-Tiny, DaViT-Small, and DaViT-Base achieve 82.8%, 84.2%, and 84.6% top-1 accuracy on ImageNet-1K with 28.3M, 49.7M, and 87.9M parameters, respectively.
+When we further scale up DaViT with 1.5B weakly supervised image and text pairs, DaViT-Gaint reaches 90.4% top-1 accuracy on ImageNet-1K.
+
+![acc](figures/acc.png)
 
 ## Getting Started
 Python3, PyTorch>=1.8.0, torchvision>=0.7.0 are required for the current codebase.
@@ -15,6 +31,48 @@ Python3, PyTorch>=1.8.0, torchvision>=0.7.0 are required for the current codebas
 pip install torch===1.9.0+cu102 torchvision===0.10.0+cu102 torchaudio===0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
 pip install thop pyyaml fvcore pillow==8.3.2
 ```
+
+### Image Classification
+- Prepare the ImageNet dataset in the timm format (DATASET_DIR/train/ DATASET_DIR/val/).
+
+- Set the following ENV variable:
+  ```
+  $MASTER_ADDR: IP address of the node 0 (Not required if you have only one node (machine))
+  $MASTER_PORT: Port used for initializing distributed environment
+  $NODE_RANK: Index of the node
+  $N_NODES: Number of nodes 
+  $NPROC_PER_NODE: Number of GPUs (NOTE: should exactly match local GPU numbers with `CUDA_VISIBLE_DEVICES`)
+  ```
+
+- Training:
+  - Example1 (One machine with 8 GPUs):
+  ```shell
+  python -u -m torch.distributed.launch --nproc_per_node=8 \
+  --nnodes=1 --node_rank=0 --master_port=12345 \
+  train.py DATASET_DIR --model DaViT_tiny --batch-size 128 --lr 1e-3 \
+  --native-amp --clip-grad 1.0 --output OUTPUT_DIR
+  ```
+
+  - Example2 (Two machines, each has 8 GPUs):
+  ```shell
+  # Node 1: (IP: 192.168.1.1, and has a free port: 12345)
+  python -u -m torch.distributed.launch --nproc_per_node=8
+  --nnodes=2 --node_rank=0 --master_addr="192.168.1.1"
+  --master_port=12345 train.py DATASET_DIR --model DaViT_tiny --batch-size 128 --lr 2e-3 \
+  --native-amp --clip-grad 1.0 --output OUTPUT_DIR
+
+  # Node 2:
+  python -u -m torch.distributed.launch --nproc_per_node=8
+  --nnodes=2 --node_rank=1 --master_addr="192.168.1.1"
+  --master_port=12345 train.py DATASET_DIR --model DaViT_tiny --batch-size 128 --lr 2e-3 \
+  --native-amp --clip-grad 1.0 --output OUTPUT_DIR
+  ```
+
+- Validation:
+  ```shell
+  CUDA_VISIBLE_DEVICES=0 python -u validate.py DATASET_DIR --model DaViT_tiny --batch-size 128  \
+  --native-amp  --checkpoint TRAINED_MODEL_PATH  # --img-size 224 --no-test-pool
+  ```
 
 ### Object Detection and Instance Segmentation
 - `cd mmdet` & install mmcv/mmdet
@@ -102,11 +160,13 @@ pip install thop pyyaml fvcore pillow==8.3.2
 
 If you find this repo useful to your project, please consider citing it with the following bib:
 
-    @article{ding2022davit,
-        title={DaViT: Dual Attention Vision Transformer}, 
-        author={Ding, Mingyu and Xiao, Bin and Codella, Noel and Luo, Ping and Wang, Jingdong and Yuan, Lu},
-        journal={arXiv preprint arXiv:2204.03645},
-        year={2022},
+    @inproceedings{ding2022davit,
+      title={Davit: Dual attention vision transformers},
+      author={Ding, Mingyu and Xiao, Bin and Codella, Noel and Luo, Ping and Wang, Jingdong and Yuan, Lu},
+      booktitle={Computer Vision--ECCV 2022: 17th European Conference, Tel Aviv, Israel, October 23--27, 2022, Proceedings, Part XXIV},
+      pages={74--92},
+      year={2022},
+      organization={Springer}
     }
 
 ## Acknowledgement
